@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import re
 
 path=[
     ###'',
@@ -20,7 +19,6 @@ for root, dirs, files in os.walk(path[0]):
             os.rename(_oldPath, _newPath)
             print(f'Renamed [{_oldPath}] \n-> [{_newPath}]')
     break
-
 
 for root, dirs, files in os.walk(path[0]):
     for file in files:
