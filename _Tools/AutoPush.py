@@ -26,7 +26,7 @@ def run_commands():
             print("output : ", end='')
             print(outputMessage)
         except Exception as e:
-            print("*ERROR : ", end='')
+            print("*Exception : ", end='')
             print(e)
             
 def main():
