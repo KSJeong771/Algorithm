@@ -24,7 +24,7 @@ def run_commands():
 
             print('output : {}'.format(outputMessage))
         except Exception as e:
-            print('*** Exception : {}'.format(command))
+            print('*** Exception : {}'.format(e))
             
 def main():
     run_commands()
