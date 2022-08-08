@@ -7,8 +7,8 @@ branch_name = 'main'
 commit_message = dt.datetime.strftime(dt.datetime.now(), '%y%m%d')
 commands = [
     [git_path, 'add', '*'],
-    [git_path, 'commit', '-m', commit_message]
-    #[git_path, 'push', 'origin', branch_name],
+    [git_path, 'commit', '-m', commit_message],
+    [git_path, 'push', 'origin', branch_name],
 ]
 
 def run_commands():
