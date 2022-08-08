@@ -4,7 +4,7 @@ import datetime as dt
 git_path = 'C:\\Program Files\\Git\\cmd\\git.exe'
 commit_path = '..'
 branch_name = 'main'
-commit_message = dt.datetime.strftime(dt.datetime.now(), '%y%m%d')
+commit_message = dt.datetime.strftime(dt.datetime.now(), '%y%m%d') + ' ' + 'Auto commit'
 commands = [
     [git_path, 'add', '*'],
     [git_path, 'commit', '-m', commit_message],
