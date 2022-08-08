@@ -13,8 +13,7 @@ commands = [
 
 def run_commands():
     for command in commands:
-        print('command : ', end='')
-        print(command)
+        print('command : {}'.format(command))
             
         try:
             outputMessage = subprocess.run(
@@ -23,14 +22,12 @@ def run_commands():
                 check = True,
                 stdout = subprocess.PIPE).stdout
 
-            print("output : ", end = '')
-            print(outputMessage)
+            print('output : {}'.format(command))
         except Exception as e:
-            print("*Exception : ", end = '')
-            print(e)
+            print('*** Exception : {}'.format(command))
             
 def main():
     run_commands()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
