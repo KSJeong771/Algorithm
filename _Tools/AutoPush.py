@@ -2,13 +2,13 @@ import subprocess
 import datetime as dt
 
 git_path = 'C:\\Program Files\\Git\\cmd\\git.exe'
-commit_path = 'D:\\Algorithm'
+commit_path = '..'
 branch_name = 'main'
 commit_message = dt.datetime.strftime(dt.datetime.now(), '%y%m%d')
 commands = [
     [git_path, 'add', '*'],
-    [git_path, 'commit', '-m', commit_message],
-    [git_path, 'push', 'origin', branch_name],
+    [git_path, 'commit', '-m', commit_message]
+    #[git_path, 'push', 'origin', branch_name],
 ]
 
 def run_commands():
@@ -19,14 +19,14 @@ def run_commands():
         try:
             outputMessage = subprocess.run(
                 command,
-                cwd=commit_path,
-                check=True,
-                stdout=subprocess.PIPE).stdout
+                cwd = commit_path,
+                check = True,
+                stdout = subprocess.PIPE).stdout
 
-            print("output : ", end='')
+            print("output : ", end = '')
             print(outputMessage)
         except Exception as e:
-            print("*Exception : ", end='')
+            print("*Exception : ", end = '')
             print(e)
             
 def main():
