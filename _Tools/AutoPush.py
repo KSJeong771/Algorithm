@@ -2,7 +2,7 @@ import subprocess
 import datetime as dt
 
 git_path = 'C:\\Program Files\\Git\\cmd\\git.exe'
-commit_path = '..'
+local_repository_path = '..'
 branch_name = 'main'
 commit_message = dt.datetime.strftime(dt.datetime.now(), '%y%m%d') + ' ' + 'Auto commit'
 commands = [
@@ -18,7 +18,7 @@ def run_commands():
         try:
             outputMessage = subprocess.run(
                 command,
-                cwd = commit_path,
+                cwd = local_repository_path,
                 check = True,
                 stdout = subprocess.PIPE).stdout
 
