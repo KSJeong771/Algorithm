@@ -22,7 +22,7 @@ def run_commands():
                 check = True,
                 stdout = subprocess.PIPE).stdout
 
-            print('output : {}'.format(command))
+            print('output : {}'.format(outputMessage))
         except Exception as e:
             print('*** Exception : {}'.format(command))
             
