@@ -3,86 +3,56 @@
 import java.util.*;
 
 class Solution {
-    char[][] grid;
-    
-    //좌회전하면 인덱스 감소
-    //우회전하면 인덱스 증가
-    int[] dx = {-1,0,1,0};
-    int[] dy = {0,-1,0,1};
-    
-    HashMap<String, Integer> visited = new HashMap();
-    
-    public int func(int r, int c, int direction) {
-        final int HEIGHT = grid.length;
-        final int WIDTH = grid[0].length;
-        int depth = 0;
-        
-        int sizeBefore = visited.size();
-        
-        //사이클 감지할때까지
-        //같은 장소를 같은 방향으로 탐색했을 때 사이클이 발생한다
-        while(true){
-            char currentNode = grid[r][c];
-            String temp = Integer.toString(r) + "," + Integer.toString(c) + "," + direction;
-            
-            if(visited.get(temp) != null)
-                break;
-            
-            visited.put(temp, 1);
+    int[] solution(String[] strGrid) {
+        char[][] grid = to2dArray(strGrid);
+        int height = grid.length;
+        int width = grid[0].length;
 
-            direction = turn(currentNode, direction);
-            r += dy[direction];
-            c += dx[direction];
+        int[][][] visited = new int[height][width][4];
+        List<Integer> cycles = new ArrayList<>();
 
-            if(r < 0) r = HEIGHT-1;
-            if(c < 0) c = WIDTH-1;
-            if(r >= HEIGHT) r = 0;
-            if(c >= WIDTH) c = 0;
-        }
-        
-        // for(var v : visited.entrySet())
-        //     System.out.print(v + " ");
-        // System.out.print("\n");
-        
-        return visited.size() - sizeBefore;
-    }
-    
-    public int[] solution(String[] sgrid) {
-        //처리하기 쉬운 배열로 변환
-        grid= new char[sgrid.length][sgrid[0].length()];
-        for(int i=0; i<grid.length; i++){
-            grid[i] = sgrid[i].toCharArray();
-        }        
-        
-        var list = new ArrayList<Integer>();
-        
-        //모든 노드에서
-        for(int r=0; r<grid.length; r++){
-            for(int c=0; c<grid[0].length; c++){
-                //모든 방향으로 빛 쏴보기
-                for(int i=0; i<4; i++){
-                    String temp = Integer.toString(r) + "," + Integer.toString(c) + "," + i;
-                    if(visited.get(temp) == null)
-                        list.add(func(r, c, i));
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                for (int k = 0; k < 4; k++) {
+                    bfs3d(grid, visited, cycles, i, j, k);
                 }
             }
         }
-        
-        int[] answer = new int[list.size()];
-        int index = 0;
-        for(var v : list){
-            answer[index++] = v;
-        }
-        
-        Arrays.sort(answer);
-        
-        return answer;
+
+        return to1dArray(cycles);
     }
-    
-    public int turn(char node, int direction){
-        switch(node){
-            case 'S':
-                break;
+
+    void bfs3d(char[][] grid, int[][][] visited, List<Integer> cycles, int i, int j, int k) {
+        int[] dr = {-1, 0, 1, 0};
+        int[] dc = {0, 1, 0, -1};
+
+        int height = grid.length;
+        int width = grid[0].length;
+
+        int nextRow = i;
+        int nextCol = j;
+        int nextDir = k;
+
+        int depth = 1;
+        while (visited[nextRow][nextCol][nextDir] == 0) {
+            visited[nextRow][nextCol][nextDir] = depth++;
+
+            nextDir = changeDirection(nextDir, grid[nextRow][nextCol]);
+            nextRow += dr[nextDir];
+            nextCol += dc[nextDir];
+
+            if (nextRow < 0) nextRow = height - 1;
+            if (nextCol < 0) nextCol = width - 1;
+            if (nextRow >= height) nextRow = 0;
+            if (nextCol >= width) nextCol = 0;
+        }
+        if (depth - 1 > 0) {
+            cycles.add(depth - 1);
+        }
+    }
+
+    int changeDirection(int direction, char where) {
+        switch (where) {
             case 'L':
                 direction--;
                 break;
@@ -90,13 +60,35 @@ class Solution {
                 direction++;
                 break;
         }
-        
-        if(direction < 0)
+
+        if (direction < 0) {
             direction = 3;
-        
-        if(direction > 3)
+        }
+        if (direction > 3) {
             direction = 0;
-        
+        }
+
         return direction;
+    }
+
+    int[] to1dArray(List<Integer> list) {
+        return list.stream()
+                .sorted()
+                .mapToInt(i->i)
+                .toArray();
+    }
+
+    char[][] to2dArray(String[] grid) {
+        int height = grid.length;
+        int width = grid[0].length();
+
+        char[][] arrGrid = new char[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                arrGrid[i][j]=  grid[i].charAt(j);
+            }
+        }
+
+        return arrGrid;
     }
 }
