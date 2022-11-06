@@ -3,83 +3,79 @@
 import java.util.*;
 
 class Solution {
+    class Point {
+        long x;
+        long y;
+        
+        public Point(long x, long y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
     public String[] solution(int[][] line) {
-        HashMap<String, Integer> map = new HashMap();
-        long minX = 8987654321987654321L;
-        long minY = 8987654321987654321L;
+        List<Point> intersection = new ArrayList<>();
         
-        long maxX = -8987654321987654321L;
-        long maxY = -8987654321987654321L;
-        
-        for(int i=0; i<line.length; i++){
+        for (int i=0; i<line.length; i++) {
             long A = line[i][0];
             long B = line[i][1];
             long E = line[i][2];
             
-            for(int j=i+1; j<line.length; j++){
+            for (int j=i+1; j<line.length; j++) {
                 long C = line[j][0];
                 long D = line[j][1];
                 long F = line[j][2];
                 
-                //System.out.printf("직선 1 : %dx + %dy + %d", A, B, C);
-                //System.out.printf(" 직선 2 : %dx + %dy + %d\n", D, E, F);
+                long dividendX = B*F - E*D;
+                long dividendY = E*C - A*F;
+                long divisor = A*D - B*C;
                 
-                long xBefore = (B * F) - (E * D);
-                long yBefore = (E * C) - (A * F);
-                long div = (A * D) - (B * C);
+                // 두 직선이 평행 또는 일치
+                if (divisor == 0) continue;
                 
-                //두 직선이 평행 또는 일치
-                if(div == 0){
-                    //System.out.println("두 직선이 평행 또는 일치");
-                    continue;
-                }
+                // 정수인지 판별
+                if (dividendX % divisor != 0) continue;
+                if (dividendY % divisor != 0) continue;
                 
-                //정수가 아닌 교점
-                if(xBefore % div != 0 || yBefore % div != 0){
-                    //System.out.println("정수가 아닌 교점 : " + xBefore + "," + yBefore + "," + div);
-                    continue;
-                }
-                
-                int x = (int)(xBefore / div);
-                int y = (int)(yBefore / div);
-                
-                if(x < minX) minX = x;
-                if(y < minY) minY = y;
-                if(x > maxX) maxX = x;
-                if(y > maxY) maxY = y;
-                
-                map.put(Integer.toString(x) + "," + Integer.toString(y), 1);
+                // 교점 수집
+                long x = dividendX / divisor;
+                long y = dividendY / divisor;
+                intersection.add(new Point(x, y));
             }
         }
         
-        int width = (int)Math.abs(maxX - minX) + 1;
-        int height = (int)Math.abs(maxY - minY) + 1;
-        if(width > 1000) width = 1000;
-        if(height > 1000) height = 1000;
-        
-        char[][] board = new char[height][width];
-        for(int i=height-1; i>=0; i--){
-            for(int j=0; j<width; j++){
-                board[i][j] = '.';
-            }
+        // 최소 사각형 크기 구하기
+        long minX = Long.MAX_VALUE;
+        long minY = Long.MAX_VALUE;
+        long maxX = Long.MIN_VALUE;
+        long maxY = Long.MIN_VALUE;
+
+        for (var point : intersection) {
+            minX = Math.min(minX, point.x);
+            minY = Math.min(minY, point.y);
+            maxX = Math.max(maxX, point.x);
+            maxY = Math.max(maxY, point.y);
+        }
+
+        int width = (int)(maxX - minX) + 1;
+        int height = (int)(maxY - minY) + 1;
+
+        // 최소 사각형에 별 찍기
+        char[][] rectangle = new char[height][width];
+        for (int i=0; i<height; i++) {
+            Arrays.fill(rectangle[i], '.');
+        }
+        for (var point : intersection) {
+            int actualX = (int)(point.x - minX);
+            int actualY = (int)(point.y - minY);
+            rectangle[actualY][actualX] = '*';
         }
         
-        for(var v : map.entrySet()){
-            //System.out.println(v.getKey());
-            int x = Integer.parseInt(v.getKey().split(",")[0]) - (int)minX;
-            int y = Integer.parseInt(v.getKey().split(",")[1]) - (int)minY;
-            if(x > 1000) continue;
-            if(y > 1000) continue;
-            board[y][x] = '*';
-        }
-        
+        // 위아래 반전
         String[] answer = new String[height];
-        
-        int answerIndex = 0;
-        for(int i=height-1; i>=0; i--){
-            answer[answerIndex++] = String.valueOf(board[i]);
+        for (int i=height-1; i>=0; i--) {
+            answer[height-i-1] = String.valueOf(rectangle[i]);
         }
-        
         return answer;
     }
 }
