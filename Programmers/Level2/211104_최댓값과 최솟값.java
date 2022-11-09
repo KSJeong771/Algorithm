@@ -2,18 +2,15 @@
 
 class Solution {
     public String solution(String s) {
-        String answer = "";
+        long max = Long.MIN_VALUE;
+        long min = Long.MAX_VALUE;
         
-        long max = -987654321;
-        long min = 987654321;
-        
-        for(var subStr : s.split(" ")){
-            long num = Long.parseLong(subStr);
-            max = Math.max(num, max);
-            min = Math.min(num, min);
+        for (var substr : s.split(" ")){
+            long num = Long.parseLong(substr);
+            max = Math.max(max, num);
+            min = Math.min(min, num);
         }
         
-        answer = min + " " + max;
-        return answer;
+        return min + " " + max;
     }
 }
