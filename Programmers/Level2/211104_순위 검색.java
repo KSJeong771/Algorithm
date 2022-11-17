@@ -1,3 +1,5 @@
+// https://school.programmers.co.kr/learn/courses/30/lessons/72412
+
 import java.util.*;
 
 class Solution {
@@ -42,12 +44,12 @@ class Solution {
             int position = Collections.binarySearch(points, point);
             if (position >= 0) {
                 // 기준과 같은 점수를 발견했다면 그 점수와 같은 점수가 위치한 최초의 인덱스를 찾아야 한다.
-				for (int i=position-1; i>=0; i--) {
+                for (int i=position-1; i>=0; i--) {
                     if (!points.get(a).equals(point)) {
                         break;
                     }
                     position = i;
-				}
+                }
                 result[i] = points.size() - position;
             } else {
                 // 기준과 같은 점수가 없다면 그 다음 위치부터 몇 명이 있는지 세면 된다.
