@@ -1,97 +1,88 @@
-//https://programmers.co.kr/learn/courses/30/lessons/72412
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+class Solution {
+    
+    public int[] solution(String[] info, String[] query) {
+        Map<String, List<Integer>> cacheMap = new HashMap();
+        for (var eachInfo : info) {
+            // 점수와 칼럼 정보를 분리한다.
+            int pointIndex = eachInfo.lastIndexOf(" ");
+            Integer point = Integer.parseInt(eachInfo.substring(pointIndex + 1, eachInfo.length()));
+            String columnInfo = eachInfo.substring(0, pointIndex);
+            
+            // 와일드카드를 포함한 테이블을 만든다.
+            String[][] tableWithWildcard = new String[4][2];
+            String[] columnElements = columnInfo.split(" ");
+            for (int i=0; i<4; i++) {
+                tableWithWildcard[i][0] = columnElements[i];
+                tableWithWildcard[i][1] = "-";
+            }
+            
+            // 테이블의 문자열이 선택되는 경우의 수마다 점수를 저장한다.
+            populateCacheMap(cacheMap, tableWithWildcard, "", point, 0);
+        }
+        
+        // 점수를 정렬한다.
+        cacheMap.forEach((k, v) -> Collections.sort(v));
+        
+        // 쿼리문 처리
+        int[] result = new int[query.length];
+        for (int i=0; i<query.length; i++) {
+            // 점수와 칼럼 정보를 분리한다.
+            int pointIndex = query[i].lastIndexOf(" ");
+            Integer point = Integer.parseInt(query[i].substring(pointIndex + 1, query[i].length()));
+            String columnInfo = query[i].substring(0, pointIndex);
+            // System.out.println("point : " + point);
+            
+            // 칼럼 정보를 키로 사용하여 점수 목록을 찾는다.
+            String key = columnInfo.replace(" and ", "");
+            List<Integer> points = cacheMap.getOrDefault(key, new ArrayList<Integer>());
+            
+            // 기준보다 높은 점수를 받은 사람 수를 찾는다
+            int position = Collections.binarySearch(points, point);
+            if (position >= 0) {
+                // 기준과 같은 점수를 발견했다면 그 점수와 같은 점수가 위치한 최초의 인덱스를 찾아야 한다.
+				for (int i=position-1; i>=0; i--) {
+                    if (!points.get(a).equals(point)) {
+                        break;
+                    }
+                    position = i;
+				}
+                result[i] = points.size() - position;
+            } else {
+                // 기준과 같은 점수가 없다면 그 다음 위치부터 몇 명이 있는지 세면 된다.
+                // binarySearch는 대상이 없을 경우 기준 점수가 들어갈 위치 -1을 음수로 반환하므로 양수로 변환한다.
+                result[i] = points.size() + (position + 1);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 문자열이 선택되는 경우의 수를 미리 저장하여 탐색 속도를 높이기 위한 함수
+     * @param cacheMap : 결과값이 저장된다.
+     * @param table : 선택될 수 있는 모든 문자열
+     * @param concatenatedKey : 재귀호출 도중 선택된 문자열들을 이어붙인 것
+     * @param value : 재귀호출 끝에서 cacheMap에 저장될 값
+     * @param depth : 재귀호출 깊이
+     */
+    void populateCacheMap(Map<String, List<Integer>> cacheMap,
+                          final String[][] table,
+                          String concatenatedKey,
+                          Integer value,
+                          int depth) {
+        // 선택된 문자열을 Key로서 Map에 추가하고 재귀호출을 종료한다.
+        if (depth == table.length) {
+            List<Integer> values = cacheMap.getOrDefault(concatenatedKey, new ArrayList<Integer>());
+            values.add(value);
+            cacheMap.put(concatenatedKey, values);
+            return;
+        }
 
-class Solution{
-	//"-"가 포함된 경우의 수만큼 해시맵에 점수를 넣는다
-	public void makeInfoMap(HashMap<String, ArrayList<Integer>>[] infoMap, String[] splittedInfoItem, int point, String concatKey, int currentTry, int maxTry, int mapNumber) {
-		if (currentTry >= maxTry) {
-			var points = infoMap[mapNumber/2].getOrDefault(concatKey, new ArrayList<Integer>());
-			points.add(point);
-			infoMap[mapNumber/2].put(concatKey, points);
-			return;
-		}
-		
-		makeInfoMap(infoMap, splittedInfoItem, point, concatKey + "-", currentTry + 1, maxTry, mapNumber + (int)Math.pow(2, currentTry+1));
-		makeInfoMap(infoMap, splittedInfoItem, point, concatKey + splittedInfoItem[currentTry], currentTry + 1, maxTry, mapNumber);
-	}
-	
-	public int[] solution(String[] info, String[] query) {
-		int[] answer = new int[query.length];
-		
-		//해시맵 초기화
-		int numOfHashMap = 4 * 4;
-		HashMap<String, ArrayList<Integer>>[] infoMap = new HashMap[numOfHashMap];
-		for (int i=0; i<numOfHashMap; i++) {
-			infoMap[i] = new HashMap<String, ArrayList<Integer>>();
-		}
-		
-		//info를 해시맵으로 가공
-		//키 : 점수, 공백을 제거한 info 문자열
-		//값 : 점수
-		for (var infoItem : info) {
-			var key = infoItem.substring(0, infoItem.lastIndexOf(' ')).split(" ");
-			var point = Integer.parseInt(infoItem.substring(infoItem.lastIndexOf(' ')+1));
-			
-			makeInfoMap(infoMap, key, point, "", 0, key.length, 1);
-		}
-		
-		//모든 해시맵을 정렬
-		for (int i=0; i<numOfHashMap; i++) {
-			infoMap[i].forEach((k, v)->{ 
-				if (v.size() > 1) 
-					v.sort(null);
-			});
-		}
-		
-		//쿼리문 처리
-		int index = 0;
-		for (var queryItem : query) {
-			var key = queryItem.substring(0, queryItem.lastIndexOf(' ')).replaceAll(" and ", "");
-			var splittedKey= queryItem.substring(0, queryItem.lastIndexOf(' ')).split(" and ");
-			Integer point = Integer.parseInt(queryItem.substring(queryItem.lastIndexOf(' ') + 1));
-			
-			//쿼리문의 "-" 위치와 갯수에 따라 해시맵 번호가 달라진다.
-			int group = 0;
-			int splitKeyIndex = 1;
-			for (var splittedKeyItem : splittedKey){
-				if (splittedKeyItem.equals("-")) {
-					group += splitKeyIndex;
-				}
-				splitKeyIndex *= 2;
-			}
-			
-			//" and "를 제거한 문자열을 키값으로 사용하여 해시맵에서 값을 가져온다.
-			ArrayList<Integer> queryResult = infoMap[group].get(key);
-			
-			//키에 해당되는 값이 없을 경우 처리
-			if (queryResult == null || queryResult.size() <= 0) {
-				answer[index++] = 0;
-				continue;
-			}
-			
-			//이진 탐색
-			int searchResult = Collections.binarySearch(queryResult, point);
-			//찾는 값이 있다면
-			if (searchResult >= 0) {
-				//가장 왼쪽에 있는 값을 얻는다
-				for (int a=searchResult-1; a>=0; a--) {
-				  if (queryResult.get(searchResult) - queryResult.get(a) > 0) {
-					  break;
-				  }
-				  else {
-					  searchResult = a;
-				  }
-				}
-				answer[index++] = queryResult.size()-searchResult;
-			}
-			else {
-				answer[index++] = queryResult.size()+searchResult+1;
-			}
-		}
-		
-        return answer;
+        // 다음 문자열을 선택하고 재귀호출한다.
+        for (int i=0; i<table[depth].length; i++) {
+            String nextKey = concatenatedKey + table[depth][i];
+            populateCacheMap(cacheMap, table, nextKey, value, depth + 1);
+        }
     }
 }
