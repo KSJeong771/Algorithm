@@ -2,29 +2,27 @@
 
 class Solution {
     public String solution(String s) {
-        String answer = "";
+        StringBuilder result = new StringBuilder();
         
-        char[] chArr = s.toLowerCase().toCharArray();
-        boolean isFirst = true;
-        
-        int index = 0;
-        for(char ch : chArr){
-            if (ch == ' '){
-                isFirst = true;
-            }else if (ch >= 'a' && ch <= 'z'){
-                if(isFirst){
-                    chArr[index] -= ('a' - 'A');
-                    isFirst = false;
+        boolean scanningWord = false;
+        for (int i=0; i<s.length(); i++) {
+            char ch = s.charAt(i);
+            
+            if (ch == ' ') {
+                scanningWord = false;
+            } else {
+                if (!scanningWord && 'a' <= ch && ch <= 'z') {
+                    ch = (char)('A' + (ch - 'a'));
                 }
+                if (scanningWord && 'A' <= ch && ch <= 'Z') {
+                    ch = (char)('a' + (ch - 'A'));
+                }
+                scanningWord = true;
             }
-            else{
-                isFirst = false;
-            }
-            index++;
+            
+            result.append(ch);
         }
         
-            
-        answer += String.valueOf(chArr);
-        return answer;
+        return result.toString();
     }
 }

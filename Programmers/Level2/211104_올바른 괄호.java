@@ -4,27 +4,26 @@ import java.util.*;
 
 class Solution {
     boolean solution(String s) {
-        boolean answer = true;
-
-        Stack<Character> stack = new Stack();
-        for(char ch : s.toCharArray()){
-            if(stack.isEmpty()){
-               stack.push(ch);
-               continue;
+        Stack<Character> brackets = new Stack();
+        
+        for (var ch : s.toCharArray()) {
+            if (brackets.isEmpty()) {
+                if (ch == ')') {
+                    return false;
+                }
+                
+                brackets.push(ch);
+                continue;
             }
             
-            if(ch == '('){
-                stack.push(ch);
+            if (ch == ')' && brackets.peek() == '(') {
+                brackets.pop();
+            } else {
+                brackets.push(ch);
             }
-            else if (ch == ')'){
-                if(stack.peek() == '('){
-                    stack.pop();
-                }else{
-                    stack.push(ch);
-                }
-            }
+            
         }
 
-        return stack.isEmpty();
+        return brackets.isEmpty();
     }
 }

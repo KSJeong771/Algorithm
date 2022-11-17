@@ -45,8 +45,8 @@ class Solution {
         }
         
         for (int x=0; x<n; x++) {
-            // 다른 퀸의 공격 범위 안이라 퀸을 배치할 수 없다.
-            if (attackRange[y][x] == 0) {
+            // 다른 퀸의 공격 범위 안이면 퀸을 배치할 수 없다.
+            if (attackRange[y][x] != 0) {
                 continue;
             }
             

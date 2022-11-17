@@ -1,32 +1,21 @@
 //https://programmers.co.kr/learn/courses/30/lessons/70129
 
-import java.util.*;
-
 class Solution {
     public int[] solution(String s) {
-        int[] answer = {0, 0};
+        int lostZero = 0;
+        int conversionCount = 0;
         
-        int doCount = 0;
-        int zeroCount = 0;
-        while(true){
+        while (!s.equals("1")) {
             int lengthBefore = s.length();
-            //0 제거
             s = s.replace("0", "");
+            
             int lengthAfter = s.length();
-            
-            zeroCount += (lengthBefore - lengthAfter);
-            
-            //남은 문자열 길이를 이진법으로
             s = Integer.toBinaryString(lengthAfter);
             
-            doCount++;
-            if(s.equals("1"))
-                break;
+            lostZero += (lengthBefore - lengthAfter);
+            conversionCount++;
         }
         
-        answer[0] = doCount;
-        answer[1] = zeroCount;
-        
-        return answer;
+        return new int[] {conversionCount, lostZero};
     }
 }
