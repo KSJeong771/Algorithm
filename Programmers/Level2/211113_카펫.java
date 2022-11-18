@@ -2,31 +2,24 @@
 
 class Solution {
     public int[] solution(int brown, int yellow) {
-        int[] answer = new int[2];
+        // brown + yellow = 사각형의 넓이
+        int rectSize = brown + yellow;
         
-        //brown = 2w + 2h - 4
-        //yellow = w*h - brown
-        //w*h = yellow + brown
-        //w+h = (brown+4)/2
-        //w+h = brown/2 + 2
-        
-        //두 수의 합이 brown/2 + 2인 모든 수를 대상으로
-        //두 수의 곱이 yellow + brown 조건을 만족하는지 조사
-        
-        //System.out.println("width+height : " + (brown/2+2));
-        //System.out.println("width*height : " + (yellow + brown));
-        for(int i=1; i<=brown/2+2; i++){
-            int left = i;
-            int right = brown/2+2 - i;
-            //System.out.println("left : " + left + " right : " + right);
+        int sqrt = (int)Math.sqrt(rectSize);
+        for (int height=sqrt; height>=1; height--) {
+            if (rectSize % height != 0) {
+                continue;
+            }
             
-            if(left * right == yellow + brown){
-                answer[0] = right;
-                answer[1] = left;
-                return answer;
+            // 넓이를 나누는 것에 성공한다면 가로, 세로 길이를 찾은 것이다.
+            int width = rectSize / height;
+            
+            // 찾은 사각형이 brown과 yellow의 조건을 만족시키는지 검사해야한다.
+            if ((width + height) * 2 - 4 == brown) {
+                return new int[] {width, height};
             }
         }
         
-        return answer;
+        throw new RuntimeException("fail");
     }
 }
