@@ -1,7 +1,6 @@
 package reusable;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class BFS {
 
@@ -14,62 +13,110 @@ public class BFS {
             this.c = c;
         }
     }
-    int[] dr = {-1, 0, 1, 0};
-    int[] dc = {0, -1, 0, 1};
 
-    private int bfs(int[][] picture, int[][] visited, int r, int c) {
-        // 벽 등 탐색 불가 지역은 탐색하지 않도록 하기 (문제별로 다름)
-        if (picture[r][c] == 0) {
-            return 0;
+    // https://school.programmers.co.kr/learn/courses/30/lessons/1829
+    /**
+     * 2차원 배열을 너비 우선 탐색한다.
+     *
+     * @param startPoint : 탐색이 시작되는 지점
+     * @param matrix : 탐색하고자 하는 2차원 배열
+     * @param visited : 어떤 단계를 거쳐 탐색했는지 기록하기 위한 배열
+     * @return 탐색된 영역의 크기
+     */
+    int bfsMatrix(Point startPoint, int[][] matrix, int[][] visited) {
+        int areaSize = 0;
+
+        // (Optional) 탐색 불가 영역 거르기
+//        if (matrix[startPoint.r][startPoint.c] == 0) {
+//            return areaSize;
+//        }
+
+        // 이미 탐색된 영역 거르기
+        if (visited[startPoint.r][startPoint.c] > 0) {
+            return areaSize;
         }
 
-        // 이미 탐색한 영역을 다시 탐색하지 않도록 하기
-        if (visited[r][c] > 0) {
-            return 0;
-        }
-
-        int sizeOfArea = 1;
-        visited[r][c] = 1;
+        int[] dc = {0, -1, 0, 1};
+        int[] dr = {-1, 0, 1, 0};
 
         Queue<Point> queue = new LinkedList<>();
-        queue.add(new Point(r, c));
-        while (!queue.isEmpty()) {
-            var current = queue.poll();
+        queue.add(startPoint);
+        visited[startPoint.r][startPoint.c] = 1;
+        areaSize++;
 
-            int nextR;
-            int nextC;
+        while (!queue.isEmpty()) {
+            var currentPoint = queue.poll();
+
             for (int i=0; i<4; i++) {
-                nextR = current.r + dr[i];
-                nextC = current.c + dc[i];
+                int nextR = currentPoint.r + dr[i];
+                int nextC = currentPoint.c + dc[i];
 
                 if (nextR < 0) continue;
                 if (nextC < 0) continue;
-                if (nextR >= picture.length) continue;
-                if (nextC >= picture[0].length) continue;
+                if (nextR >= matrix.length) continue;
+                if (nextC >= matrix[0].length) continue;
 
+                // 이미 탐색된 영역 거르기
                 if (visited[nextR][nextC] > 0) continue;
 
-                // 동일한 영역만 탐색하고 싶을 때 조건
-                if (picture[nextR][nextC] != picture[r][c]) continue;
+                // (Optional) 동일한 영역만 탐색하기
+//                if (matrix[nextR][nextC] != matrix[startPoint.r][startPoint.c]) continue;
 
                 queue.add(new Point(nextR, nextC));
-
-                // 미로찾기식 BFS, depth를 visited에 기록
-                //visited[nextR][nextC] = visited[val.r][val.c] + 1;
-
-                // 영역의 크기를 구하는 BFS, 큐에 들어온 원소 수만큼 visited에 기록
-                visited[nextR][nextC] = ++sizeOfArea;
+                visited[nextR][nextC] = visited[currentPoint.r][currentPoint.c] + 1;
+                areaSize++;
             }
         }
 
-        // for (int k = 0; k < picture.length; k++) {
-        // 	for (int l = 0; l < picture[0].length; l++) {
-        // 		System.out.print(visited[k][l] + " ");
-        // 	}
-        // 	System.out.println();
-        // }
-        // System.out.println();
+        return areaSize;
+    }
 
-        return sizeOfArea;
+    // https://school.programmers.co.kr/learn/courses/30/lessons/86971
+    /**
+     * 노드 간선 그래프를 너비 우선 탐색한다.
+     *
+     * @param startNode : 탐색이 시작되는 지점
+     * @param bannedEdge : 탐색하지 않을 간선
+     * @param graph : 탐색하고자 하는 노드 간선 그래프
+     * @param visited : 어떤 단계를 거쳐 탐색했는지 기록하기 위한 배열
+     * @return 탐색된 영역의 크기
+     */
+    int bfsGraph(int startNode, int bannedEdge, int[][] graph, int[] visited) {
+        int areaSize = 0;
+
+        // 이미 탐색된 영역 거르기
+        if (visited[startNode] > 0) {
+            return areaSize;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(startNode);
+        visited[startNode] = 1;
+        areaSize++;
+
+        while (!queue.isEmpty()) {
+            var currentNode = queue.poll();
+
+            for (int edge=0; edge<graph.length; edge++) {
+                int from = graph[edge][0];
+                int to = graph[edge][1];
+                int nextNode = (currentNode == from) ? to : from;
+
+                // (Optional) 특정 간선 거르기
+//                if (bannedEdge == edge) continue;
+
+                // 현재 노드와 관련없는 간선 거르기
+                if (currentNode != from && currentNode != to) continue;
+
+                // 이미 탐색된 영역 거르기
+                if (visited[nextNode] > 0) continue;
+
+                queue.add(nextNode);
+                visited[nextNode] = visited[currentNode] + 1;
+                areaSize++;
+            }
+        }
+
+        return areaSize;
     }
 }
